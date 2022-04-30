@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>U.S. Covid-19 Cases</title>
+    <title>US Covid Cases</title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css"/>
@@ -13,36 +13,24 @@
             margin: 0;
             padding: 0;
         }
-        .map-title {
+        #title {
             position: absolute;
-            bottom: 0;
+            top: 0;
             left: 0;
-            background: rgb(80, 80, 80);
-            border-style: solid;
-            border-width: 1px;
-            border-color: rgba(0, 0, 0, 0.2);
+            margin-top: 20px;
             margin-left: 20px;
-            font-family: Arial, sans-serif;
-            overflow: auto;
-            border-radius: 3px;
-            color: white;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 25pt;
+            color: rgba(250, 226, 91, 0.911)
         }
 
-        #features {
-            top: 0;
-            padding: 10px;
-            height: 100px;
-            margin-top: 20px;
-            width: 250px;
-            text-align: center;
-        }
 
         #subtitle {
             position: absolute;
             top: 0;
             left: 0;
-            margin-top: 10px;
-            margin-left: 10px;
+            margin-top: 70px;
+            margin-left: 20px;
             font-family: 'Open Sans', sans-serif;
             font-size: 15pt;
             color: white
@@ -53,18 +41,17 @@
             bottom: 0;
             width: 100%;
         }
-
         /* the layout of the legend panel */
         #legend {
             position: absolute;
             bottom: 0;
             right: 0;
-            width: 175px;
+            width: 200px;
             background: #fff;
             margin-right: 20px;
             margin-bottom: 40px;
             font-family: 'Open Sans', sans-serif;
-            padding: 10px 20px 10px 10px;
+            padding: 10px 20px 10px 2px;
             border-radius: 3px;
             text-align: center;
         }
@@ -103,65 +90,72 @@
 <body>
     <div id="map"></div>
     <div id="legend"></div>
-    <div class='map-title' id='features'>
-        <h2>Contiguous US Covid-19 Cases 2020</h2>
+    <div id="title">
+        2020 Covid-19 Cases <br> in the contiguous US
+    </div>
+    <div id="subtitle">
+        <br><br>Click on dots to see county cases.
     </div>
     <script>
         mapboxgl.accessToken =
             'pk.eyJ1IjoiamFrb2J6aGFvIiwiYSI6ImNpcms2YWsyMzAwMmtmbG5icTFxZ3ZkdncifQ.P9MBej1xacybKcDN_jehvw';
-    const map = new mapboxgl.Map({
-        container: 'map',
-        style: 'mapbox://styles/mapbox/light-v10',
-        zoom: 4,
-        center: [-100,40],
-        projection: {
-            name: 'albers',
-            parallels: [25, 50]
-        }
-    }
-    );
+        let map = new mapboxgl.Map({
+            container: 'map', // container ID
+            style: 'mapbox://styles/mapbox/dark-v10',
+            zoom: 3, // starting zoom
+            center: [-100,40], // starting center
+            projection: {
+                name: 'albers',
+                parallels: [25, 50]
+            } 
+        });
 
-        const grades = [1000, 2000, 5000, 20000, 80000],
-            colors = ['rgb(228, 203, 82)', 'rgb(219, 173, 22)', 'rgb(203, 148, 64)', 'rgb(224, 70, 4)','rgb(186, 11, 11)'],
-            radii = [2, 4, 10, 15, 30];
+        const grades = [1000, 5000, 20000, 100000, 200000],
+            colors = ['rgb(228, 203, 82)', 'rgba(250, 226, 91, 0.911)', 'rgb(252, 166, 54)', 'rgb(224, 70, 4)','rgb(186, 11, 11)'],
+            radii = [1, 4, 10, 20, 30];
 
         //load data to the map as new layers.
         //map.on('load', function loadingData() {
         map.on('load', () => { //simplifying the function statement: arrow with brackets to define a function
+
+            // when loading a geojson, there are two steps
+            // add a source of the data and then add the layer out of the source
             map.addSource('covidcases', {
                 type: 'geojson',
                 data: 'assets/us-covid-2020-counts.geojson'
             });
 
             map.addLayer({
-                    'id': 'covid-layer',
+                    'id': 'covidcases-point',
                     'type': 'circle',
                     'source': 'covidcases',
+                    'minzoom': 2,
                     'paint': {
                         // increase the radii of the circle as the zoom level and dbh value increases
                         'circle-radius': {
                             'property': 'cases',
                             'stops': [
                                 [{
-                                    zoom: 5,
+                                    zoom: 3,
                                     value: grades[0]
                                 }, radii[0]],
                                 [{
-                                    zoom: 5,
+                                    zoom: 3,
                                     value: grades[1]
                                 }, radii[1]],
                                 [{
-                                    zoom: 5,
+                                    zoom: 3,
                                     value: grades[2]
-                                }, radii[2]]
+                                }, radii[2]],
                                 [{
-                                    zoom: 5,
+                                    zoom: 3,
                                     value: grades[3]
-                                }, radii[3]]
+                                }, radii[3]],
                                 [{
-                                    zoom: 5,
+                                    zoom: 3,
                                     value: grades[4]
                                 }, radii[4]]
+
                             ]
                         },
                         'circle-color': {
@@ -183,11 +177,11 @@
             );
 
 
-            // click on tree to view magnitude in a popup
-            map.on('click', 'covid-point', (event) => {
+            // click on tree to view cases in a popup
+            map.on('click', 'covidcases-point', (event) => {
                 new mapboxgl.Popup()
                     .setLngLat(event.features[0].geometry.coordinates)
-                    .setHTML(`<strong>Cases:</strong> ${event.features[0].properties.cases}`)
+                    .setHTML(`<strong>${event.features[0].properties.county}, ${event.features[0].properties.state}</strong><br><strong>Cases:</strong> ${event.features[0].properties.cases}`)
                     .addTo(map);
             });
 
@@ -212,7 +206,7 @@
         }
         // add data source
         const source =
-            '<p style="text-align: center; font-size:10pt"> Data Source: <a href="https://github.com/nytimes/covid-19-data/blob/43d32dde2f87bd4dafbb7d23f5d9e878124018b8/live/us-counties.csv">The New York Times</a></p>';
+            '<p style="text-align: right; font-size:10pt">Source: <a href="https://github.com/nytimes/covid-19-data/blob/43d32dde2f87bd4dafbb7d23f5d9e878124018b8/live/us-counties.csv">The New York Times</a><br> Projection: Albers</p>';
         // combine all the html codes.
         legend.innerHTML = labels.join('') + source;
     </script>
