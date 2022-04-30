@@ -1,10 +1,13 @@
 # US Coronavirus Cases 2020
 
 This project explores the distribution of covid-19 cases in the lower 48 US states from the year 2020. 
+
 ## Map 1: US Covid-19 Case Rates
+![](img/map1image.JPG)
 The [first map](https://sarahg9.github.io/CoronavirusCases2020/map1) is a choropleth map depicting the covid-19 cases per thousand people by each county in the US. Users can hover over individual counties to see the covid rates. The rates are rounded so there is not a fraction of a case of covid. 
 
 ## Map 2: US Covid-19 Cases
+![](img/map2image.JPG)
 The [second map](https://sarahg9.github.io/CoronavirusCases2020/map2) visualizes the total number of covid cases in each county as a proportional symbol map. Users can zoom in and out as well click on the points for each county and see the county name and number of covid cases. 
 
 The maps acts as visualizations of covid case data and these maps can be used to suggest trends in counties and regions and similar maps could be used to inform policy and public health decisions. Primary functions used for making the maps include "map.on" and "geojsonFetch." Both functions, through the inclusion of secondary functions, recongize the data source and then add the data's corresponding layer to the map. 
